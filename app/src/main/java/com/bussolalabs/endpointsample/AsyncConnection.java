@@ -2,6 +2,7 @@ package com.bussolalabs.endpointsample;
 
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.bussolalabs.endpointsample.backend.suggestionBeanApi.SuggestionBeanApi;
@@ -17,6 +18,8 @@ import java.io.IOException;
  * Created by alessio on 10/11/15.
  */
 public class AsyncConnection extends AsyncTask<Context, String, Boolean> {
+
+    private final String TAG = AsyncConnection.class.getSimpleName();
 
     Context context = null;
 
@@ -42,10 +45,13 @@ public class AsyncConnection extends AsyncTask<Context, String, Boolean> {
                 );
         SuggestionBeanApi suggestionBeanApiService = suggestionBuilder.build();
         try {
+            Log.d(TAG, ".doInBackground - before execute - question: " + ((MainActivity) context).question);
             SuggestionBean suggestionBean = suggestionBeanApiService.getAnswer(((MainActivity) context).question).execute();
             ((MainActivity)context).answer = suggestionBean.getAnswer();
+            Log.d(TAG, ".doInBackground - before execute - answer: " + ((MainActivity)context).answer);
             return true;
         } catch (IOException e) {
+            Log.e(TAG, ".doInBackground - connection error: " + e.getMessage());
             e.printStackTrace();
             // manage connection error
         }
@@ -57,6 +63,7 @@ public class AsyncConnection extends AsyncTask<Context, String, Boolean> {
     protected void onPostExecute(Boolean res) {
         super.onPostExecute(res);
 
+        Log.d(TAG, ".onPostExecute - res: " + res);
         if (!res) {
             Toast.makeText(context, "Error connection", Toast.LENGTH_LONG).show();
         }
